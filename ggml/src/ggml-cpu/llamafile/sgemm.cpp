@@ -4357,8 +4357,9 @@ bool llamafile_sgemm(const struct ggml_compute_params * params, int64_t m, int64
     assert(params->ith < params->nth);
 
     // only enable sgemm for prompt processing
+    // F16 x F32 also takes single rows, so that a row gives the same result alone and in a batch
 #if !defined(__MMA__)
-    if (n < 2)
+    if (n < 2 && !(Atype == GGML_TYPE_F16 && Btype == GGML_TYPE_F32))
         return false;
 #endif
 
